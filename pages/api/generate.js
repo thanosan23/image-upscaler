@@ -15,6 +15,7 @@ export default async function handler(req, res) {
   });
 
   let jsonResponse = await response.json();
+  console.log(jsonResponse);
   let url = jsonResponse.urls.get;
 
   let image = null;
@@ -28,14 +29,14 @@ export default async function handler(req, res) {
       },
     });
     let finalResponse = await output.json();
-    if (output.status == "succeeded") {
-      image =  finalResponse.urls.get;
-    } else if (output.status == "failed") {
+    if (finalResponse.status == "succeeded") {
+      image =  finalResponse.output;
+    } else if (finalResponse.status == "failed") {
       break;
     } else {
       await new Promise((resolve) => setTimeout(resolve, 1000));
     }
   }
 
-  res.status(200).json(image);
+  res.status(200).json(JSON.stringify({url:url}));
 }

@@ -15,11 +15,11 @@ export default function Home() {
   const options = {
     styles: { colors: { primary: "#000" } },
     mimeTypes: ["image/jpeg", "image/png", "image/jpg"],
-    maxFileCount: 1
+    maxFileCount: 1,
+    editor: { images: { crop: false } }
   };
   
   const [ originalPhoto, setOriginalPhoto ] = useState(null);
-  const [ newPhotoLoading, setNewPhotoLoading ] = useState(null);
   const [ newPhoto, setNewPhoto ] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -43,6 +43,7 @@ export default function Home() {
                 setOriginalPhoto(file[0].fileUrl.replace("raw", "thumbnail"));
 
                 setLoading(true);
+
                 const res = await fetch("/api/generate", {
                   method: "POST",
                   headers: {
@@ -50,7 +51,9 @@ export default function Home() {
                   },
                   body: JSON.stringify({ imageUrl: file[0].fileUrl.replace("raw", "thumbnail") }),
                 });
+                
                 let newPhoto = await res.json();
+                newPhoto = newPhoto.url;
                 setLoading(false);
 
                 setNewPhoto(newPhoto);
@@ -81,10 +84,10 @@ export default function Home() {
               className="rounded-2xl relative sm:mt-0 mt-2 cursor-zoom-in"
               width={275}
               height={275}
-              onLoadingComplete={() => setNewPhotoLoading(false)}
+              onLoadingComplete={() => setLoading(false)}
             />
           )}
-          {(loading || newPhotoLoading ) && (
+          {(loading ) && (
             <ThreeDots
               height="80" 
               width="80" 
